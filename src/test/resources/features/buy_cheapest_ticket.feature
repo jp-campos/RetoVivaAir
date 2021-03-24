@@ -1,9 +1,9 @@
-Feature: Buy the cheapest ticket
-  AS a tourist
-  I want to buy to bui the cheapest ticket from Medellin to Bogota
-  To see what the minimum price for a ticket is
+Feature: Hacer una reserva en Viva Air
+  Como un turista
+  Quiero hacer una reserva para un vuelo
+  Para poder viajar
 
-  Scenario: Make a reservation for a roundtrip from today to tomorrow of the route Bogota - Medellin
-    Given I am browsing the internet
-    When I Book the cheapest flight
-    Then The value of the flight should be the same at the end of the transaction
+  Scenario: Hacer una reserva para mañana entre Bogota - Medellin
+    Given Estoy navegando por el internet
+    When Reservo el vuelo mas barato entre Bogota y Medellin
+    Then El valor del vuelo deberia ser el mismo al final de la transaccion

@@ -1,6 +1,8 @@
 package com.taller.selenium.stepdefinitions;
 
-import com.taller.selenium.steps.BookTicketSteps;
+import com.taller.selenium.steps.BuscarVueloSteps;
+import com.taller.selenium.steps.ParametrizarReservaSteps;
+import com.taller.selenium.steps.ReservarVueloSteps;
 import com.taller.selenium.ui.ListaVuelos;
 import com.taller.selenium.ui.PopupsReserva;
 import com.taller.selenium.ui.ResumenReserva;
@@ -16,18 +18,15 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 
-import javax.sound.midi.Soundbank;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 
-public class BuyCheapestTicketStepDefinitions {
+public class ReservarVueloMasBaratoStepDefinitions {
 
     private WebDriver driver;
-    private BookTicketSteps steps;
+    private ReservarVueloSteps steps;
     private int precioVueloMasBarato;
 
-    @Given("I am browsing the internet")
+    @Given("Estoy navegando por el internet")
     public void iAmBrowsingTheInternet() {
 
 
@@ -47,38 +46,41 @@ public class BuyCheapestTicketStepDefinitions {
 
         driver.get(url);
 
-        steps = new BookTicketSteps();
+        steps = new ReservarVueloSteps();
+
+        //Sería más conveniente hacer una factory pero como serenity se encargará del manejo de dependencias lo omití
+
+        BuscarVueloSteps buscarVueloSteps = new BuscarVueloSteps();
+        buscarVueloSteps.setHome(new VivaAirHome(driver));
+
+        ParametrizarReservaSteps parametrizarReservaSteps = new ParametrizarReservaSteps();
+
+        parametrizarReservaSteps.setDriver(driver);
+        parametrizarReservaSteps.setPopupsReservaPage(new PopupsReserva(driver));
+        parametrizarReservaSteps.setListaVuelosPage(new ListaVuelos(driver));
+        parametrizarReservaSteps.setResumenReserva(new ResumenReserva(driver));
+
+        steps.setParametrizarReservaSteps(parametrizarReservaSteps);
+        steps.setBuscarVueloSteps(buscarVueloSteps);
+
         steps.setHome(new VivaAirHome(driver));
         steps.setListaVuelosPage(new ListaVuelos(driver));
         steps.setPopupsPage(new PopupsReserva(driver));
         steps.setResumenReserva(new ResumenReserva(driver));
+        steps.setDriver(driver);
 
     }
 
 
-    @When("I Book the cheapest flight")
-    public void iBookTheCheapestFlight() {
+    @When("Reservo el vuelo mas barato entre Bogota y Medellin")
+    public void reservoElVueloMasBaratoEntreBogotaYMedellin() {
 
-        steps.soloIda();
-        steps.llenarOrigen("Medellin\n");
-        steps.llenarDestino("Bogota\n");
-
-        //Buscar como fecha del vuelo el día siguiente al de la ejecución
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDateTime now = LocalDateTime.now();
-        String ida = dtf.format(now.plusDays(1));
-
-        steps.elegirFechaIda(ida, driver);
-        steps.buscarVuelos();
-
+        steps.buscarVueloParaManiana("Medellin\n", "Bogota\n");
         precioVueloMasBarato = steps.elegirVueloMasBarato();
-        steps.elegirComboMasBarato();
-        steps.declinarPopups(driver);
-        steps.negarSwitches();
 
     }
-    @Then("The value of the flight should be the same at the end of the transaction")
-    public void theValueOfTheFlightShouldBeTheSameAtTheEndOfTheTransaction() {
+    @Then("El valor del vuelo deberia ser el mismo al final de la transaccion")
+    public void elValorDelVueloDeberaaSerElMismoAlFinalDeLaTransaccian() {
         int precioObtenido = steps.obtenerPrecioResumen();
 
         System.out.println(precioObtenido + " PRECIO");
@@ -88,7 +90,7 @@ public class BuyCheapestTicketStepDefinitions {
 
     @After
     public void cleanup(){
-        driver.close();
+        //driver.close();
     }
 
 

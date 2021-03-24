@@ -11,5 +11,5 @@ import org.junit.runner.Runner;
         glue = "com.taller.selenium.stepdefinitions",
         snippets = CucumberOptions.SnippetType.CAMELCASE
 )
-public class BuyCheapestTicket {
+public class ReservarVuelo {
 }
